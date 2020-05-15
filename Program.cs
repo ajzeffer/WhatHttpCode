@@ -6,25 +6,38 @@ namespace WhatHttpCode
     {
         static void Main(string[] args)
         {
-            if(args.Length<= 0 ){
-               Console.WriteLine("Fetching Status Codes ...");
-               foreach(HttpStatusCode status in Enum.GetValues(typeof(HttpStatusCode))){
-                   if(status == HttpStatusCode.NetworkAuthenticationRequired){
-                       var foo = "temp";
-                   }
-                   Console.WriteLine($"{(int)status} => {status.ToString()}");
-               }
-               Console.WriteLine("That's all of them... Next time you can pass in an statusCode and I'll tell you what that number means!");
+            if(hasNoArgs(args)){
+               writeAllStatusCodes();
                return;
             }
-            var httpCodeIn =  args[0];
-            var code = int.TryParse(httpCodeIn, out var httpCode);
-            var description = (HttpStatusCode)httpCode;
-            if(int.TryParse(description.ToString(), out var invalidCode )){
+
+            var httpCode = getHttpCode(args[0]);
+
+            if(isInValidCode(httpCode)){
                 Console.WriteLine("Tisk Tisk ... That's not a valid HttpStatusCode");
                 return;
             }
-            Console.WriteLine($"{httpCode.ToString()} => {description.ToString()}");
+
+            Console.WriteLine($"{(int)httpCode} => {httpCode.ToString()}");
+        }
+
+        // Helpers
+        private static bool hasArgs(string[] args) => args.Length > 0;
+        private static bool hasNoArgs(string[] args) => !hasArgs(args);
+        private static bool isInValidCode(HttpStatusCode code) => !isValidCode(code);
+        private static bool isValidCode(HttpStatusCode code) => !int.TryParse(code.ToString(), out var invalidCode);
+        private static HttpStatusCode getHttpCode(string httpCode){
+            var isInt = int.TryParse(httpCode, out var code);
+            var httpCodeOut = (HttpStatusCode)code;
+            return httpCodeOut;
+        }
+
+        private static void writeAllStatusCodes(){
+                Console.WriteLine("Fetching Status Codes ...");
+               foreach(HttpStatusCode status in Enum.GetValues(typeof(HttpStatusCode))){
+                   Console.WriteLine($"{(int)status} => {status.ToString()}");
+               }
+               Console.WriteLine("That's all of them... Next time you can pass in an statusCode and I'll tell you what that number means!");
         }
     }
 }
